@@ -11,6 +11,7 @@ Requirements
 * Python 3.x
 * virtualenv
 * git (optional)
+* depending on what's already installed, you may need to install more libraries, gcc, etc. I had to install the following: gcc, python3-dev, python3-tk
 
 
 Getting started
@@ -20,11 +21,11 @@ Getting started
 ```
 git clone https://github.com/SKisContent/JobFun.git
 ```
-+ Create a new virtual environment.
++ Create a new virtual environment (you may need to install it.)
 
 ```bash
 $ cd JobFun
-$ virtualenv venv
+$ virtualenv -p python3 venv
 $ . venv/bin/activate
 ```
 
@@ -59,4 +60,15 @@ python microservices/fetch_url/api_server.py &
 
 ```bash
 $ ./manage.py runserver
+```
+
+#Is it working?
+
+It's always the big question. You can try out some of the microservices just from the command line. For example:
+```bash
+curl -i -d "html=<html><body><div id='jobdescSec'>This is fun</div></body></html>" http://localhost:8887/api/v1/words
+```
+It should respond with:
+```text
+{"data": "This is fun"}
 ```

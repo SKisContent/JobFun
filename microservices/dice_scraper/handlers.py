@@ -22,7 +22,7 @@ def get_words(html):
             words = ' '.join(job_text)
             json_response = json.dumps({'data':words})
             return json_response
-    except:
+    except Exception as e:
         return None
 
 

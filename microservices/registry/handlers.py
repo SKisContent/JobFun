@@ -47,7 +47,7 @@ def handle_challenge(response):
     if not response.body:
         logger.warning("Response failed for challenge: {0}".format(response.effective_url))
         return
-    resp_j = json.loads(response.body)
+    resp_j = json.loads(response.body.decode())
     logger.info("Got payload from {0}: {1}".format(response.effective_url, resp_j))
     reply = resp_j['reply']
     if reply == RESPONSE:
