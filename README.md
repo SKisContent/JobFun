@@ -62,7 +62,8 @@ python microservices/fetch_url/api_server.py &
 $ ./manage.py runserver
 ```
 
-#Is it working?
+Is it working?
+--------------
 
 It's always the big question. You can try out some of the microservices just from the command line. For example:
 ```bash
