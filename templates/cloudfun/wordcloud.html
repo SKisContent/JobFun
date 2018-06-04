@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block page_css %}
+    textarea {
+        width:800px;
+    }
+{% endblock %}
+{% block content %}
+    {% if message %}
+        <p><span style="color:red;">{{ message }}</span></p>
+    {% endif %}
+    Paste URLs into the following:
+    <form action="{% url 'wordcloud' %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+    <input type="submit" value="OK">
+    </form>
+    {% if results %}
+        <div>
+        <img alt="Embedded Image" src="data:image/png;base64,{{ results }}" />
+        </div>
+    {% endif %}
+{% endblock %}
