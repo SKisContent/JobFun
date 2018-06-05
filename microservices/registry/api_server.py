@@ -1,7 +1,7 @@
 import logging
 import tornado.ioloop
 import tornado.web
-from registry.handlers import RegistryHandler
+from registry.handlers import RegistryHandler, HeartbeatHandler
 
 logger = logging.getLogger("registry")
 logger.setLevel(logging.INFO)
@@ -14,6 +14,7 @@ class RegistryService:
     def make_app(self):
         return tornado.web.Application([
             (r"/api/v1/register/", RegistryHandler),
+            (r'/api/v1/ping/', HeartbeatHandler)
         ])
 
     def start(self):

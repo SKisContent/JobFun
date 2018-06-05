@@ -11,6 +11,7 @@ class FetchUrlService(Microservice):
         name = 'fetch_url'
         url = 'http://localhost'
         port = 8888
+        secret = None
 
     def handlers(self):
         return [

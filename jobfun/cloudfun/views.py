@@ -8,7 +8,6 @@ import base64
 # Create your views here.
 class WordCloudView(TemplateView):
     template_name = "cloudfun/wordcloud.html"
-    success_url = '/cloudfun/'
     form_class = WordCloudForm
 
     def get(self, request, *args, **kwargs):

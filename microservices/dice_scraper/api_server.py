@@ -11,6 +11,7 @@ class DiceScraperService(Microservice):
         name = 'dice_scraper'
         url = 'http://localhost'
         port = 8887
+        secret = None
 
     def handlers(self):
         return [

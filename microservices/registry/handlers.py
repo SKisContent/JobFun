@@ -21,7 +21,7 @@ class ServiceMeta:
     """
     name = None
     url = None
-    port = None
+    port = 0
     secret = None
     last_contact = None
 
@@ -53,9 +53,10 @@ def handle_challenge(response):
     if reply == RESPONSE:
         service_name = resp_j['name']
         service_url = resp_j['url']
-        service_port = resp_j['port']
+        service_port = int(resp_j['port'])
         logger.info("Got a verification response from service {0}".format(service_name))
         service = ServiceMeta(service_name, service_url, service_port)
+        service.secret = resp_j['secret']
         registry[service_name] = service
         logger.info("Added service {0} to the registry".format(service_name))
 
@@ -74,33 +75,49 @@ class RegistryHandler(tornado.web.RequestHandler):
             self.write(json.dumps({'data': {'name':service.name, 'url':service.url, 'port':service.port}}))
             self.set_header('Content-Type', 'application/json')
             self.set_status(HTTP_STATUS_OK)
-
+        else:
+            self.set_status(HTTP_STATUS_BAD_REQUEST,
+                            'Service is not registered: {0}'.format(service_name))
 
     def post(self):
         """
         post will be used by microservices to register themselves
         :return:
         """
-        logger.info("New registration request")
+        logger.info('Registration request')
         service_name = self.get_argument('name')
         service_url = self.get_argument('url')
-        service_port = self.get_argument('port')
-        service_secret = self.get_argument('secret', None)
-        # TODO: verify that URL is well-formed and that port is a valid integer
+        service_port = int(self.get_argument('port'))
+        # TODO: verify that URL is well-formed and that port is a valid integer in a range
         logger.info("Registry got a registration request from service {0}".format(service_name))
+        # make sure this is one of "our" services that we want to register
+        logger.info("Sending challenge to service {0}".format(service_name))
+        http_client = AsyncHTTPClient()
+        data = urlencode({'challenge': CHALLENGE, 'secret':datetime.now().timestamp()})
+        http_client.fetch('{0}:{1}/api/v1/verify/'.format(service_url, service_port),
+                          handle_challenge, method='POST', headers=None, body=data)
+        self.set_status(HTTP_STATUS_OK)
+
+
+class HeartbeatHandler(tornado.web.RequestHandler):
+    def post(self):
+        logger.info("Heartbeat request")
+        service_name = self.get_argument('name')
+        service_url = self.get_argument('url')
+        service_port = int(self.get_argument('port'))
+        service_secret = self.get_argument('secret', None)
+        logger.info("Registry got a heartbeat service {0}".format(service_name))
         if service_name in registry and service_secret:
             service = registry[service_name]
             # If the service is already registered with the same parameters, refresh the contact
             # If we're getting different URL and port, just fail the request
-            if service.name == service_name and service.url == service_url and service.port == service_port:
+            # Another option would be to update the information if address/port change
+            if service.secret == service_secret and service.url == service_url and service.port == service_port:
                 service.last_contact = datetime.now()
                 self.set_status(HTTP_STATUS_OK)
             else:
-                self.set_status(HTTP_STATUS_BAD_REQUEST, 'Service attempted to re-register on different URL and port: {0}'.format(service))
+                self.set_status(HTTP_STATUS_BAD_REQUEST,
+                                'Service attempted to re-register with different secret, URL, or port: {0}'.format(service))
         else:
-            # make sure this is one of "our" services that we want to register
-            logger.info("Sending challenge to service {0}".format(service_name))
-            http_client = AsyncHTTPClient()
-            params = urlencode({'challenge': CHALLENGE})
-            http_client.fetch('{0}:{1}/api/v1/verify/?{2}'.format(service_url, service_port, params), handle_challenge)
-
+            self.set_status(HTTP_STATUS_BAD_REQUEST,
+                            'Service is not registered: {0}'.format(service_name))

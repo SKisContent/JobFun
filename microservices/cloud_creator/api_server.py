@@ -11,6 +11,7 @@ class WordcloudService(Microservice):
         name = 'wordcloud'
         url = 'http://localhost'
         port = 8886
+        secret = None
 
     def handlers(self):
         return [

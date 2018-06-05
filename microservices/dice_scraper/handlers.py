@@ -37,5 +37,5 @@ class WordsHandler(tornado.web.RequestHandler):
             self.set_status(HTTP_STATUS_NO_CONTENT, 'There was no content')
         else:
             self.write(json_response)
-            self.set_header('Content-Type', 'applicaton/json')
+            self.set_header('Content-Type', 'application/json')
             self.set_status(HTTP_STATUS_OK)
