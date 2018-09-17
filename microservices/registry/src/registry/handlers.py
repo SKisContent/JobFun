@@ -13,7 +13,6 @@ logger = logging.getLogger("registry")
 # TODO: This is really simplistic. Is it thread-safe? How can it be?
 registry = {}
 
-
 class ServiceMeta:
     """
     A simple class for keeping track of microservice properties. Who knows what else

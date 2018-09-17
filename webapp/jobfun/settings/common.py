@@ -120,3 +120,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CLOUD_FUN = os.environ.get("CLOUD_FUN", "localhost")
+DICE_SCRAPER = os.environ.get("DICE_SCRAPER", "localhost")
+FETCH_URL = os.environ.get("FETCH_URL", "localhost")
+REGISTRY = os.environ.get("REGISTRY", "localhost")

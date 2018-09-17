@@ -1,0 +1,59 @@
+#docker-compose.yml
+version: '3.3'
+services:
+
+  # the web app
+  webapp:
+    build:
+      context: ./webapp
+    ports:
+      - "8000:8000"
+    environment:
+      - REGISTRY=registry
+      - CLOUD_CREATOR=cloud_creator
+      - DICE_SCRAPER=dice_scraper
+      - FETCH_URL=fetch_url
+
+  # cloud_creator microservice
+  cloud_creator:
+    build:
+      context: ./microservices
+      dockerfile: cloud_creator/Dockerfile
+    ports:
+      - "8886:8886"
+    environment:
+      - REGISTRY_URL=registry
+      - SERVICE_URL=cloud_creator
+      - SERVICE_PORT=8886
+
+  # dice_scraper microservice
+  dice_scraper:
+    build:
+      context: ./microservices
+      dockerfile: dice_scraper/Dockerfile
+    ports:
+      - "8887:8887"
+    environment:
+      - REGISTRY_URL=registry
+      - SERVICE_URL=dice_scraper
+      - SERVICE_PORT=8887
+
+  # fetch_url microservice
+  fetch_url:
+    build:
+      context: ./microservices
+      dockerfile: fetch_url/Dockerfile
+    ports:
+      - "8888:8888"
+    environment:
+      - REGISTRY_URL=registry
+      - SERVICE_URL=fetch_url
+      - SERVICE_PORT=8888
+
+  # the microservice registry
+  registry:
+    build:
+      context: ./microservices
+      dockerfile: registry/Dockerfile
+    ports:
+      - "9000:9000"

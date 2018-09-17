@@ -1,14 +1,15 @@
 import json
 import logging
-from datetime import datetime
+from os import environ
+import sys
 import requests
 import tornado.web
 import tornado.ioloop
 from tornado.httpclient import AsyncHTTPClient
 from urllib.parse import urlencode
 
-REGISTRY_PORT = 9000
-REGISTRY_URL = 'http://localhost'
+REGISTRY_URL = 'http://' + environ.get("REGISTRY_URL", "localhost")
+REGISTRY_PORT = environ.get("REGISTRY_PORT", 9000)
 
 logger = logging.getLogger("microservice")
 logger.setLevel(logging.INFO)
@@ -53,7 +54,7 @@ class Microservice:
     An abstract base class that defines some basic behavior of a microservice.
     Subclasses need to define a Meta nested class with name, url and port properties, and
     they need to implement a handlers() method that returns an array of tuples consisting of
-    URLs, references to handler classes, and optional additional paramters, basically the Tornado
+    URLs, references to handler classes, and optional additional parameters, basically the Tornado
     e.g. [(r'/api/v1/my_endpoint', MyEndPointHandler),]
     """
     def __new__(cls, *args, **kwargs):
@@ -63,9 +64,17 @@ class Microservice:
         return new_class
 
     def register_service(self):
+        attempts = 0
         data = {'name': self._meta.name, 'url': self._meta.url, 'port': self._meta.port}
         logger.info('Initiating registration of self: {0}'.format(data))
-        response = requests.post('{0}:{1}/api/v1/register/'.format(REGISTRY_URL, REGISTRY_PORT), data=data)
+        try:
+            response = requests.post('{0}:{1}/api/v1/registry/'.format(REGISTRY_URL, REGISTRY_PORT), data=data)
+            self.registered = True
+        except requests.exceptions.ConnectionError as ex:
+            attempts += 1
+            logger.info("Failed to connect to registry: " + str(ex))
+            self.registered = False
+
 
     def make_app(self):
         handlers = self.handlers()
@@ -76,12 +85,15 @@ class Microservice:
         raise NotImplementedError()
 
     def ping(self):
-        logger.info("Pinging registry from: {0}".format(self._meta.name))
-        http_client = AsyncHTTPClient()
-        data = urlencode({'name': self._meta.name, 'url': self._meta.url,
-                          'port': self._meta.port, 'secret': self._meta.secret})
-        http_client.fetch('{0}:{1}/api/v1/ping/'.format(REGISTRY_URL, REGISTRY_PORT),
-                          handle_pong, method='POST', headers=None, body=data)
+        if self.registered:
+            logger.info("Pinging registry from: {0}".format(self._meta.name))
+            http_client = AsyncHTTPClient()
+            data = urlencode({'name': self._meta.name, 'url': self._meta.url,
+                              'port': self._meta.port, 'secret': self._meta.secret})
+            http_client.fetch('{0}:{1}/api/v1/ping/'.format(REGISTRY_URL, REGISTRY_PORT),
+                              handle_pong, method='POST', headers=None, body=data)
+        else:
+            self.register_service()
 
     def start(self):
         logger.info("Starting service: {0}".format(self._meta.name))

@@ -1,0 +1,5 @@
+matplotlib==2.2.2
+requests==2.18.4
+tornado==5.0.2
+urllib3==1.22
+wordcloud==1.4.1

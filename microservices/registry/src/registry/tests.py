@@ -1,5 +1,5 @@
 import unittest
-from handlers import ServiceMeta
+from registry.handlers import ServiceMeta
 
 
 class MyTestCase(unittest.TestCase):

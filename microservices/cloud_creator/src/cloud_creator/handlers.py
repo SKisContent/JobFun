@@ -1,10 +1,12 @@
+import io
 import json
 import base64
 import tornado.web
 from wordcloud import WordCloud
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import io
-from microservice import HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT
+from microservice import HTTP_STATUS_OK, HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_NO_CONTENT
 
 
 def get_image(words):
@@ -26,6 +28,7 @@ def get_image(words):
 class WordCloudHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("Breaking with all conventions, this API does not support GET")
+        self.set_status(HTTP_STATUS_BAD_REQUEST, 'There was no content')
 
     def post(self):
         words = self.get_argument("words")

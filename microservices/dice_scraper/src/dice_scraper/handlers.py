@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import tornado.web
 import json
-from microservice import HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT
+from microservice import HTTP_STATUS_OK, HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_NO_CONTENT
 
 
 def get_words(html):
@@ -29,6 +29,7 @@ def get_words(html):
 class WordsHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("Breaking with all conventions, this API does not support GET")
+        self.set_status(HTTP_STATUS_BAD_REQUEST)
 
     def post(self):
         html = self.get_argument("html")

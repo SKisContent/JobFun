@@ -1,3 +1,4 @@
+from os import environ
 import tornado.ioloop
 from microservice import Microservice
 from fetch_url.handlers import URLHandler
@@ -9,8 +10,8 @@ class FetchUrlService(Microservice):
     """
     class Meta:
         name = 'fetch_url'
-        url = 'http://localhost'
-        port = 8888
+        url = 'http://' + environ.get("SERVICE_URL", "localhost")
+        port = environ.get("SERVICE_PORT", 8888)
         secret = None
 
     def handlers(self):

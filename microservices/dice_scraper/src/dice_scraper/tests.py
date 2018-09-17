@@ -1,5 +1,5 @@
 import unittest
-from handlers import get_words
+from .handlers import get_words
 
 class MockRequest:
     COOKIES = {'': 'secure', 'Domain': 'None', 'expires': 'None', 'Max-Age': 'None', 'Path': '/'}

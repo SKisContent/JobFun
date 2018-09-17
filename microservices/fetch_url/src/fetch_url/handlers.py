@@ -1,7 +1,7 @@
 import base64
 import tornado.web
 import requests
-from microservice import HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT
+from microservice import HTTP_STATUS_OK, HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_NO_CONTENT
 
 def get_data(url):
     if not url:
@@ -24,3 +24,6 @@ class URLHandler(tornado.web.RequestHandler):
             self.write({'data': data})
             self.set_header('Content-Type', 'application/json')
             self.set_status(HTTP_STATUS_OK)
+
+    def post(self):
+        self.set_status(HTTP_STATUS_BAD_REQUEST)
