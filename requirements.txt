@@ -2,7 +2,7 @@ beautifulsoup4==4.6.0
 certifi==2018.4.16
 chardet==3.0.4
 cycler==0.10.0
-Django==2.0.6
+Django==2.2.24
 html5lib==1.0.1
 idna==2.6
 kiwisolver==1.0.1
