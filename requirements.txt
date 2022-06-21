@@ -7,7 +7,7 @@ html5lib==1.0.1
 idna==2.6
 kiwisolver==1.0.1
 matplotlib==2.2.2
-numpy==1.14.3
+numpy==1.22.0
 Pillow==5.1.0
 pyparsing==2.2.0
 python-dateutil==2.7.3
